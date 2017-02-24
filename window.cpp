@@ -11,7 +11,7 @@ Window::Window() :
 
 }
 
-Window::Window(int width, int height, const std::string &&title)
+Window::Window(int width, int height, std::string &&title)
 {
     m_title = title;
     m_window = glfwCreateWindow(width, height, m_title.c_str(), NULL, NULL);
@@ -30,9 +30,30 @@ void Window::keyPressed(int key, int scancode, int action, int mods)
 
 void Window::draw()
 {
+    glClearColor(0.2,
+    0.3,
+    0.3,
+    1.0);
+
     glClear(GL_COLOR_BUFFER_BIT);
-    //draw goes here
+    // Define the viewport dimensions
+    int width, height;
+    glfwGetFramebufferSize(m_window, &width, &height);
+    glViewport(0, 0, width, height);
+    //glBindVertexArray(0);
+
+
+    for (auto &function : m_drawSteps)
+    {
+        function();
+    }
+
     glfwSwapBuffers(m_window);
+}
+
+void Window::addDrawStep(Window::DrawFunction step)
+{
+    m_drawSteps.push_back(step);
 }
 
 std::string Window::title() const
